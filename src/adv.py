@@ -40,8 +40,6 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 player1 = Player("Player", room["outside"].name)
-beginRoom = player1.current_room
-
 
 # Write a loop that:
 #
@@ -55,10 +53,13 @@ beginRoom = player1.current_room
 # If the user enters "q", quit the game.
 
 def game():
-    print(f"Welcome to adventure game! You start at the {beginRoom}")
+    print(f"Welcome to adventure game! You start at the {player1.current_room}")
     while True:
-
         inp1 = input("enter n, e, s, w to move OR q to quit")
+        if player1.current_room == "outside" and inp1 == n:
+            player1.current_room = "foyer"
+
+
 
 
 if __name__ == '__main__':
