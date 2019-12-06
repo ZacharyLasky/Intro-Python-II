@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Declare all the rooms
 
@@ -22,8 +23,13 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
-# Link rooms together
+# Items
+items = {
+    "sword": Item("sword", "shiny silver sword!"),
+    "candle": Item("candle", "glowing orange candle")
+}
 
+# Link rooms together
 room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
@@ -33,13 +39,17 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+# add items to rooms
+room['outside'].items.append("sword")
+room['foyer'].items.append("candle")
+
 #
 # Main
 #
 
 # Make a new player object that is currently in the 'outside' room.
-player = Player("GEORGE", room["outside"])
-
+player = Player("GEORGE", room["outside"], [])
+# inventory = player.inventory()
 
 # Write a loop that:
 #
@@ -56,23 +66,38 @@ choice = None
 moved = True
 print(f"Welcome to Adventure Game!")
 while choice not in ["q"]:
-    choice = input("choose n, e, s, w OR q to quit")
+    print(f"Your current room has {player.room.items}")
+    print(f"Your inventory has {player.inventory()}")
+    print(f"You are in {player.room.name}")
+    choice = input("choose n, e, s, w to MOVE, grab to GRAB an item, drop to DROP an item, OR q to quit")
+    choice_arr = choice.split(" ")
+    choice_len = len(choice_arr)
+    print(choice_len)
     if moved:
-        print(f"{player.room.name}")
         if choice in ["n"] and hasattr(player.room, 'n_to'):
-            moved = True
             player.room = player.room.n_to
         elif choice in ["e"] and hasattr(player.room, 'e_to'):
-            moved = True
             player.room = player.room.e_to
         elif choice in ["s"] and hasattr(player.room, 's_to'):
-            moved = True
             player.room = player.room.s_to
         elif choice in ["w"] and hasattr(player.room, 'w_to'):
-            moved = True
             player.room = player.room.w_to
         elif choice in ["q"]:
             print(f"thanks for playing")
-        else:
             moved = False
-            print(f"\n!*****!\nMove not allowed, please select again\n!*****!\n")
+        else:
+            print("not allowed, try again")
+
+    if choice_len == 2:
+        action = choice_arr[0] 
+        item = choice_arr[1]
+        if action in ["grab"]:
+            try:
+                player.pick_up_item(items[item])
+            except:
+                print("nothing to grab")
+        if action in ["drop"]:
+            try:
+                player.drop_item((items[item]))
+            except:
+                print("nothing to drop")
